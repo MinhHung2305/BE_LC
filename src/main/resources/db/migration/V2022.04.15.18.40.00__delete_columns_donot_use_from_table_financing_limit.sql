@@ -1,0 +1,13 @@
+ALTER TABLE public.financing_limit DROP COLUMN sponsor_offer_code;
+ALTER TABLE public.financing_limit DROP COLUMN lc_number;
+ALTER TABLE public.financing_limit DROP COLUMN revised_sponsorship_request_code_lc;
+ALTER TABLE public.financing_limit DROP COLUMN modification_lc_code;
+ALTER TABLE public.financing_limit DROP COLUMN transaction_code_presented;
+ALTER TABLE public.financing_limit DROP COLUMN status_transaction_presented;
+ALTER TABLE public.financing_limit DROP COLUMN "period";
+ALTER TABLE public.financing_limit DROP COLUMN financing_date;
+ALTER TABLE public.financing_limit DROP COLUMN loan_maturity_date;
+ALTER TABLE public.financing_limit DROP COLUMN zoning_limit;
+ALTER TABLE public.financing_limit DROP COLUMN commitment_limit;
+ALTER TABLE public.financing_limit DROP COLUMN disbursement_amount;
+ALTER TABLE public.financing_limit DROP COLUMN repayment_amount;

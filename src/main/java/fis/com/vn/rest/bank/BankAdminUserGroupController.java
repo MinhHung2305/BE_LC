@@ -1,0 +1,145 @@
+package fis.com.vn.rest.bank;
+
+import fis.com.vn.exception.LCPlatformException;
+import fis.com.vn.model.entity.UserGroupEntity;
+import fis.com.vn.rest.request.UserGroupRequest;
+import fis.com.vn.rest.response.BaseResponse;
+import fis.com.vn.rest.response.UserGroupResponse;
+import fis.com.vn.service.common.KeycloakService;
+import fis.com.vn.service.common.UserGroupService;
+import fis.com.vn.util.Constant;
+import fis.com.vn.util.ResponseFactory;
+import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/bank")
+@Slf4j
+@Api(tags = "Bank group controller")
+public class BankAdminUserGroupController {
+
+    @Autowired
+    UserGroupService userGroupService;
+
+    @Autowired
+    KeycloakService keycloakService;
+
+    @GetMapping("/group/getAll")
+    @Secured({"ROLE_view_bank_group_management"})
+    public ResponseEntity<BaseResponse<List<UserGroupEntity>>> getUserGroup() {
+
+        List<UserGroupEntity> userGroupList = userGroupService.getByGroupType(Constant.GROUP_TYPE_BANK_USER);
+        log.info(userGroupList.toString());
+        return ResponseFactory.success(HttpStatus.OK, userGroupList, "Get All User Group");
+    }
+
+    @GetMapping("/group/getUserGroupById")
+    @Secured({"ROLE_view_bank_group_management"})
+    public ResponseEntity<BaseResponse<UserGroupResponse>> getCorporateUserGroupById(@RequestParam Long id) {
+        UserGroupResponse UserGroupResponse = new UserGroupResponse();
+        UserGroupResponse = userGroupService.findUserGroupById(id);
+        if (UserGroupResponse != null) {
+            log.info("Get: " + UserGroupResponse.toString());
+            return ResponseFactory.success(HttpStatus.OK, UserGroupResponse, "Get User Group By Id success");
+        } else {
+            return ResponseFactory.success(HttpStatus.INTERNAL_SERVER_ERROR, null, "Cannot find UserGroup");
+        }
+    }
+
+    @PostMapping("/group/createUserGroup")
+    @Secured({"ROLE_create_bank_group_management"})
+    public ResponseEntity<BaseResponse<String>> createUserGroup(@AuthenticationPrincipal Jwt principal, @RequestBody UserGroupRequest userGroup) throws LCPlatformException {
+        String userId = principal.getSubject();
+        UserGroupRequest userGroupUp = userGroup;
+        userGroupUp.setUserType(Constant.USER_TYPE_BANK);
+        userGroupUp.setGroupType(Constant.GROUP_TYPE_BANK_USER);
+        UserGroupResponse userG = userGroupService.createUserGroup(userId, userGroupUp);
+        if (userG != null) {
+            log.info("Create: " + userG.toString());
+            return ResponseFactory.success(HttpStatus.OK, "Create: " + userG.toString(), "Create UserGroup success");
+        } else {
+            return ResponseFactory.success(HttpStatus.CONFLICT, "Create UserGroup already exist",
+                    "Create UserGroup fail");
+        }
+    }
+
+    @PutMapping("/group/updateUserGroup/{id}")
+    @Secured({"ROLE_edit_bank_group_management"})
+    public ResponseEntity<BaseResponse<String>> updateUserGroup(@RequestBody UserGroupRequest userGroupRequest,
+                                                                @PathVariable String id) {
+
+        userGroupRequest.setId(Long.parseLong(id));
+        userGroupRequest.setUserType(Constant.USER_TYPE_BANK);
+        userGroupRequest.setGroupType(Constant.GROUP_TYPE_BANK_USER);
+        UserGroupResponse groupResponse = userGroupService.updateUserGroup(userGroupRequest);
+        if (groupResponse != null) {
+            log.info("Update: " + groupResponse.toString());
+            return ResponseFactory.success(HttpStatus.OK, "Update: " + groupResponse.toString(), "Update UserGroup success");
+        } else {
+            return ResponseFactory.success(HttpStatus.INTERNAL_SERVER_ERROR, "Update UserGroup fail",
+                    "Update UserGroup fail");
+        }
+    }
+
+    @DeleteMapping("/group/deleteUserGroup")
+    @Secured({"ROLE_delete_bank_group_management"})
+    public ResponseEntity<BaseResponse<String>> deleteUserGroup(@RequestParam Long id) {
+
+        UserGroupEntity userG = userGroupService.deleteByUserGroupCode(id);
+        if (userG != null) {
+            log.info("Delete: " + userG.toString());
+            return ResponseFactory.success(HttpStatus.OK, "Delete: " + userG.toString(), "Delete UserGroup success");
+        } else {
+            return ResponseFactory.success(HttpStatus.INTERNAL_SERVER_ERROR, "Delete UserGroup Fail",
+                    "Delete UserGroup fail");
+        }
+    }
+
+    @GetMapping("/group/searchUserGroup")
+    @Secured({"ROLE_view_bank_group_management"})
+    public ResponseEntity<BaseResponse<List<UserGroupEntity>>> searchUserGroup(@RequestBody UserGroupEntity userGroup) {
+
+        List<UserGroupEntity> userGroupList = userGroupService.searchUserGroup(userGroup);
+        log.info(userGroupList.toString());
+        return ResponseFactory.success(HttpStatus.OK, userGroupList, "Search User Group");
+    }
+
+    @GetMapping("/group/getPermissionUserGroup")
+    @Secured({"ROLE_view_bank_group_management"})
+    public ResponseEntity<BaseResponse<UserGroupResponse>> getPermissionUserGroup(@RequestParam String userGroupCode) {
+
+        UserGroupResponse userGroupResponse = userGroupService.getPermissionUserGroup(userGroupCode);
+        return ResponseFactory.success(HttpStatus.OK, userGroupResponse, "Get Permission User Group");
+    }
+
+    @GetMapping("/group/getPermission")
+    @Secured({"ROLE_view_bank_group_management"})
+    public ResponseEntity<BaseResponse<UserGroupResponse>> getPermission(@RequestParam String userType) {
+
+        UserGroupResponse userGroupResponse = userGroupService.getPermission(userType);
+        return ResponseFactory.success(HttpStatus.OK, userGroupResponse, "Get Permission User Group");
+    }
+
+    @PutMapping("/group/updatePermissionUserGroup")
+    @Secured({"ROLE_grant_bank_group_management"})
+    public ResponseEntity<BaseResponse<String>> updateRoleUserGroup(@RequestParam String userGroupCode,
+                                                                    @RequestBody List<String> permission) {
+
+        UserGroupEntity userG = userGroupService.updatePermissionUserGroup(userGroupCode, permission);
+        if (userG != null) {
+            return ResponseFactory.success(HttpStatus.OK, "Success", "Update Permission User Group");
+        } else {
+            return ResponseFactory.success(HttpStatus.OK, "Fail", "Update Permission User Group");
+        }
+    }
+
+}

@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS public.commodities DROP COLUMN IF EXISTS contract_id;

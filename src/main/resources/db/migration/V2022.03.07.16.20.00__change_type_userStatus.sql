@@ -1,0 +1,1 @@
+ALTER TABLE public.user_info ALTER COLUMN user_status TYPE int4 USING user_status::int4;

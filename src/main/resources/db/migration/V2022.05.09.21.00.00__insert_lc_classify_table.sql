@@ -1,0 +1,2 @@
+INSERT INTO public.lc_classify (lc_id ,lc_name,lc_type,lc_status,created_date,created_by,last_modified_by,last_modified_date,lc_code) VALUES (1,'L/C thường','LC','1',NULL,'','',NULL,'NORMAL') ON CONFLICT (lc_id) DO NOTHING;
+INSERT INTO public.lc_classify (lc_id ,lc_name,lc_type,lc_status,created_date,created_by,last_modified_by,last_modified_date,lc_code) VALUES (2,'UPAS L/C','UPAS','1',NULL,'','',NULL,'UPAS') ON CONFLICT (lc_id) DO NOTHING;

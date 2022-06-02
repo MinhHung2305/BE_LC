@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: adoptopenjdk/openjdk11:alpine-jre
+  build:
+    commands:
+      - echo Starting building LC platform on `date`
+      - mvn test 
+  post_build:
+    commands:
+      - echo Completed building a LC platform on `date`
+      - mvn package
+artifacts:
+  files:
+    - target/lc-platform-0.0.1-SNAPSHOT.jar
+  discard-paths: yes

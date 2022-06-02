@@ -1,0 +1,1 @@
+ALTER TABLE public.application_opening_lc ALTER COLUMN product_type TYPE int4 USING product_type::integer ;

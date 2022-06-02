@@ -1,0 +1,1 @@
+ALTER TABLE public.contract ADD commodity_id int4 NULL;

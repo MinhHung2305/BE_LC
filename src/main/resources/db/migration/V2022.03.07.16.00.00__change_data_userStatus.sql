@@ -1,0 +1,1 @@
+update user_info set user_status = '1' where user_status is not null ;
